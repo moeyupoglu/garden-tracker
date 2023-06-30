@@ -52,7 +52,7 @@
         <li><code>ACCESS_TOKEN_EXPIRE_MINUTES</code>: Expiry Time for access token </li>
 	</ul>
 	<h2>Contributing</h2>
-	<p>Contributions to Recipe Finder are welcome! If you find a bug or have a feature request, please open an issue or submit a pull request.</p>
+	<p>Contributions to Garden Tracker are welcome! If you find a bug or have a feature request, please open an issue or submit a pull request.</p>
 	<h2>License</h2>
 	<p>Garden Tracker is licensed under the MIT License. See <code>LICENSE</code> for details.</p>
 	<h2>Authors</h2>
