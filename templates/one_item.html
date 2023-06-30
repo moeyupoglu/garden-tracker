@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Garden Tacker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-oUXR8FFuOk34QLTF0H5jqeY44klxuUQDQItSme/6B/HShfiMNr1U1DhIp+O3LaQOl0Z1SQBgFnO1+Tl7ddZ9Uw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+ 
+  <script>
+    // Function to retrieve the token from local storage
+    function getToken() {
+        return localStorage.getItem('jwtToken');
+    }
+
+    // Function to check if the user is authenticated
+    async function isAuthenticated() {
+        const token = getToken();
+        if (token === null) {
+            return false;
+        }
+
+        // Make a request to the server to validate the token
+        const response = await fetch('/protecteduser', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        return response.ok;
+    }
+
+    // Function to redirect to the login page
+    function redirectToLogin() {
+        window.location.href = '/login';
+    }
+
+    // Function to initialize the page and check authentication
+    async function init() {
+        if (!(await isAuthenticated())) {
+            redirectToLogin();
+        }
+    }
+
+    // Call the init function when the page loads
+    window.addEventListener('load', init);
+</script>
+ <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center; /*center vertically */
+      
+    }
+
+    .container {
+      width: 450px;
+      height: 900px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 15px;
+    }
+    .inner-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px;
+      box-shadow:  rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+      width:450px;
+    }
+    .image-container {
+      height: 400px;
+      width: 100%;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .rectangle {
+      width: 150px;
+      height: 40px;
+      background-color: #757373;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      border-radius: 3px;
+      margin-top: 30px;
+    }
+    .rectangle-text {
+      font-weight: bold;
+      margin: 0;
+    }
+    .margin-text {
+      margin-top: 15px;
+      font-weight: 520;
+    }
+    .icon-container {
+      display: flex;
+      align-items: center;
+    }
+    .icon {
+      margin-right: 5px;
+      margin-right: 6px;
+    }
+    .icon-text {
+      font-weight: 500;
+    }
+    .two-line-text {
+      margin-top: 15px;
+      white-space: pre-line;
+      margin-bottom: 30px;
+    }
+    .button_container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .inner-container button {
+      padding: 3px 10px;
+      height: 44px;
+      width: 300px;
+      outline: none;
+      color: #fff;
+      border: none;
+      font-size: 18px;
+      font-weight: 500;
+      border-radius: 5px;
+      background:green;
+      transition: all 0.3s ease;
+    }
+
+
+
+    .inner-container button:hover {
+        background: #228B22;
+    }
+  </style>
+    
+</head>
+<body>
+  <div class="container">
+    <div class="inner-container">
+      <div class="image-container">
+        <img src="/static/{{plant.image_path}}" alt="Image">
+      </div>
+      <div class="rectangle">
+        <p class="rectangle-text">{{plant.name}}</p>
+      </div>
+      <p class="margin-text"></p>
+      <div class="icon-container">
+        <i class="fas fa-regular fa-tree" style="margin-left: 2px; margin-right: 5px;"></i>
+        <span class="icon-text">{{plant.type}}</span>
+      </div>
+      <div class="icon-container">
+        <i class="fas fa-map-marker-alt icon" style="margin-left: 2px;"></i>
+        <span class="icon-text">{{plant.location}}</span>
+      </div>
+      <i class="fas fa-solid fa-note"></i>
+      <div class="icon-container">
+        <i class="fas fa-sticky-note" style="margin-left: 2px; margin-right: 5px;"></i>
+        <span class="icon-text">{{plant.notes}}</span>
+      </div>
+    <div class ="button_container">
+      <form action="/main" method="get">
+        <button type="submit">Back to Home</button>
+      </form>      
+    </div>
+  </div>
+  </div>
+</body>
+</html>

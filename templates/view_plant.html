@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+  <head>
+ 
+    <meta charset="UTF-8">
+    <title>Garden Tacker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//goo.gl/mTc43h" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">  
+    </head>
+
+    <script>
+      // Function to retrieve the token from local storage
+      function getToken() {
+        return localStorage.getItem('jwtToken');
+      }
+    
+      // Function to check if the user is authenticated
+      async function isAuthenticated() {
+        const token = getToken();
+    
+        if (token === null) {
+          return false;
+        }
+    
+        // Make a request to the server to validate the token
+        const response = await fetch('/protecteduser', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+    
+        return response.ok;
+      }
+    
+      // Function to retrieve the current user's data
+      async function getCurrentUser() {
+        const response = await fetch('/current-user', {
+          headers: {
+            'Authorization': `Bearer ${getToken()}`
+          }
+        });
+    
+        if (response.ok) {
+          return await response.json();
+        } else {
+          throw new Error('Failed to get current user');
+        }
+      }
+    
+      // Function to redirect to the login page
+      function redirectToLogin() {
+        window.location.href = '/login';
+      }
+    
+      // Function to initialize the page and check authentication
+      async function init() {
+        if (!(await isAuthenticated())) {
+          redirectToLogin();
+        } else {
+          try {
+            const userData = await getCurrentUser();
+            document.getElementById('user_id').value = userData.user_id; // Set user_id value for Add Plant form
+          } catch (error) {
+            console.error('Error retrieving user data:', error);
+          }
+        }
+      }
+    
+      // Call the init function when the page loads
+      window.addEventListener('load', init);
+    </script>
+
+  <style>
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+:root {
+  --main-blue: #71b7e6;
+  --main-purple: #9b59b6;
+  --main-grey: #ccc;
+  --sub-grey: #d9d9d9;
+}
+
+body {
+  display: flex;
+  justify-content: center; /*center vertically */
+  align-items: center; /* center horizontally */
+  padding: 10px;
+}
+/* container and form */
+.container {
+  max-width: 450px;
+  margin-top: 40px;
+  width: 90%;
+  height: 600px;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 25px 30px;
+  border-radius: 5px;
+}
+.container .title {
+  font-size: 25px;
+  font-weight: 500;
+  position: relative;
+}
+
+.container .title::before {
+  content: "";
+  position: absolute;
+  height: 3.5px;
+  width: 30px;
+  left: 0;
+  bottom: 0;
+}
+
+.container form .user__details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 20px 0 12px 0;
+}
+/* inside the form user details */
+form .user_details .input_box {
+  width: calc(100% / 2 - 20px);
+  margin-bottom: 5px;
+}
+
+.user_details .input_box .details {
+  font-weight: 500;
+  margin-bottom: 1px;
+  display: block;
+}
+.user_details .input_box input {
+  height: 40px;
+  width: 100%;
+  outline: none;
+  border-radius: 5px;
+  border: 1px solid green;
+  padding-left: 15px;
+  font-size: 16px;
+  border-bottom-width: 2px;
+  transition: all 0.3s ease;
+}
+
+.user_details .input_box input:focus,
+.user_details .input_box input:valid {
+  border-color:green;
+}
+
+
+
+/* submit button */
+form .button {
+  height: 45px;
+  margin: 45px 0;
+}
+
+form .button input {
+  height: 100%;
+  width: 100%;
+  outline: none;
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 5px;
+  background: green;
+  transition: all 0.3s ease;
+}
+
+form .button input:hover {
+  background:#228B22;
+}
+
+@media only screen and (max-width: 584px) {
+  .container {
+    max-width: 100%;
+  }
+
+  form .user_details .input_box {
+    margin-bottom: 5px;
+    width: 100%;
+  }
+
+
+
+  .container form .user__details {
+    max-height: 300px;
+    overflow-y: scroll;
+  }
+
+  .user__details::-webkit-scrollbar {
+    width: 0;
+  }
+}
+/* search bar*/
+.search-box {
+  width: 100%;
+  position: relative;
+  display: flex;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+}
+
+.search-input {
+  width: 100%;
+  margin-top: 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  padding: 15px 45px 15px 15px;
+  background-color: #eaeaeb;
+  color: #6c6c6c;
+  border-radius: 6px;
+  border:none;
+  transition: all .4s;
+}
+
+.search-input:focus {
+  border:none;
+  outline:none;
+  box-shadow: 0 1px 12px #228B22;
+  -moz-box-shadow: 0 1px 12px #228B22;
+  -webkit-box-shadow: 0 1px 12px #228B22;
+}
+
+.search-btn {
+  background-color: transparent;
+  font-size: 18px;
+  padding: 6px 9px;
+  margin-left:-45px;
+  margin-top: 50px;
+  border:none;
+  color: #6c6c6c;
+  transition: all .4s;
+  z-index: 10;
+}
+
+.search-btn:hover {
+  transform: scale(1.2);
+  cursor: pointer;
+  color: black;
+}
+
+.search-btn:focus {
+  outline:none;
+  color:black;
+}
+
+.container-unique {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+  padding-top: 60px;
+}
+
+.box-unique {
+  background-color: white;
+  border: 1px solid #228B22;;
+  padding: 20px;
+  width: 100%;
+  position: relative;
+  text-align: center;
+  overflow-y: auto;
+  max-height: calc(100vh - 160px);
+}
+
+.box-unique::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.box-unique::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+/* Handle */
+.box-unique::-webkit-scrollbar-thumb {
+  background: #ffffff; 
+}
+
+/* Handle on hover */
+.box-unique::-webkit-scrollbar-thumb:hover {
+  background: #ffffff; 
+}
+
+.card-unique {
+  display: inline-flex;
+  flex-direction: column;
+  background-color:white;
+  margin-bottom: 15px;
+  margin-right: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 120px;
+  height: 150px;
+  position: relative;
+  text-align: center;
+
+}
+
+.card-unique img {
+  display: block;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  object-position: center center;
+  overflow: hidden;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.card-unique h2 {
+  margin-top: 4px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  max-width: 90%;
+  white-space: nowrap;
+  font-weight: 300;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: "Poppins", sans-serif;
+}
+
+.card-unique button {
+  display: block;
+  margin: 0px auto;
+  max-height: 24px;
+  padding-left: 10px;
+  padding-right:10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  width: 100%;
+  background:#006400;
+  transition: all 0.3s ease;
+  color: rgb(255, 254, 254);
+  border: none;
+  font-size: 11px;
+  font-weight: 350;
+  text-align: center;
+  cursor: pointer;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.card-unique button:hover {
+    background: #228B22;;
+}
+
+
+
+
+
+
+
+
+</style>
+<!--script for search bar -->
+<script src="https://kit.fontawesome.com/d97b87339f.js" crossorigin="anonymous"></script>
+
+
+<div class="container">
+    <div class="title">VIEW PLANT</div>
+    <form action="/plants/search" method="get">
+      <input id="user_id" name="owner_id" hidden>
+      <div class="search-box">
+        <input class="search-input" name="searched_item" type="text" placeholder="Search something..">
+        <button class="search-btn" type="submit"><i class="fas fa-search"></i></button>
+      </div>
+    </form>
+
+    <div class="container-unique">
+		<div class="box-unique">
+			
+			
+	    {% if plants %}
+          {% for plant in plants %}
+			
+			<div class="card-unique">
+				
+				<img src="/static/{{plant.image_path}}" alt="Image">
+				<h2>{{plant.name}}</h2>
+				<form action = "/plants/plant/{{plant.id}}" method = "get"> 
+					
+					<button style="width:120px; height:35px;" type="submit">View</button>
+				    	
+				</form> 
+			</div>
+			{% endfor %}
+		</div>
+		{% else %}
+		   <p>No Plants found.</p>
+	    {% endif %}
+  </div>
+</div>
+  
+
+</html>

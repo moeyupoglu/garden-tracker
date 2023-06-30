@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Garden Tracker</title>
+    <script>
+        // Function to retrieve the token from local storage
+        function getToken() {
+          return localStorage.getItem('jwtToken');
+        }
+      
+        // Function to check if the user is authenticated
+        async function isAuthenticated() {
+          const token = getToken();
+      
+          if (token === null) {
+            return false;
+          }
+      
+          // Make a request to the server to validate the token
+          const response = await fetch('/protecteduser', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+      
+          return response.ok;
+        }
+      
+        // Function to retrieve the current user's data
+        async function getCurrentUser() {
+          const response = await fetch('/current-user', {
+            headers: {
+              'Authorization': `Bearer ${getToken()}`
+            }
+          });
+      
+          if (response.ok) {
+            return await response.json();
+          } else {
+            throw new Error('Failed to get current user');
+          }
+        }
+      
+        // Function to redirect to the login page
+        function redirectToLogin() {
+          window.location.href = '/login';
+        }
+      
+        // Function to initialize the page and check authentication
+        async function init() {
+          if (!(await isAuthenticated())) {
+            redirectToLogin();
+          } else {
+            try {
+              const userData = await getCurrentUser();
+              document.getElementById('user_id_editplant').value = userData.user_id; // Set user_id value for Add Plant form
+              document.getElementById('user_id_viewplant').value = userData.user_id; // Set user_id value for Edit Plant form
+            } catch (error) {
+              console.error('Error retrieving user data:', error);
+            }
+          }
+        }
+      
+        // Call the init function when the page loads
+        window.addEventListener('load', init);
+      </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            font-family: 'Poppins', Arial, sans-serif;
+            color: #000000; /* Set font color to black */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin-top: 20px; /* Add space between elements */
+        }
+
+        .box {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 400px;
+            max-width: 90%;
+            position: relative;
+            text-align: center;
+            margin-top: 20px; /* Add space between elements */
+        }
+
+        .box img {
+            display: block;
+            margin: 10px auto;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+            object-position: center center;
+            overflow: hidden;
+        }
+
+        .box h1 {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+
+
+        .box button[type="submit"] {
+            margin-top: 20px; /* Adjust margin-top as needed */
+            margin-left: 5px;
+            margin-right: 5px;
+            padding: 10px;
+            width: 80%;
+            background-color: #7e6c24; /* Set button background to dark green */
+            color: #fff;
+            border: none;
+            border-radius: 10px; /* Make button slightly round */
+            font-size: 16px;
+            font-family: 'Poppins', Arial, sans-serif;
+            cursor: pointer;
+        }
+
+        .box button[type="submit"]:hover {
+            background-color: rgb(23, 161, 53);
+        }
+
+
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+            <div class="box">
+                <img class="profile-pic" src="https://img.freepik.com/free-vector/illustration-young-fresh-plant-human-hand_1284-45597.jpg" alt="profile picture" width="200">
+                <h1 style="font-size: 24px;">Garden Tracker</h1>
+                
+                <form method="get" action="/addplant">
+                    <button type="submit">Add Plant</button>
+                </form>
+                <form method="get" action="/plants/edittracking">
+                    <input id="user_id_editplant" name="owner_id" hidden>
+                    <button type="submit">Edit Plant</button>
+                </form>
+                <form method="get" action="/plants/tracking">
+                    <input id="user_id_viewplant" name="user_id" hidden >
+                    <button type="submit">View Plant</button>
+                </form>
+
+                <form method="get" action="/index">
+                    <button type="submit" style="background-color: #006400;">Back To Home</button>
+                </form>
+            </div>
+        
+    </div>
+
+</body>
+</html>

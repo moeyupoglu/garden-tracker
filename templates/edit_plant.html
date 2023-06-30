@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Garden Tacker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<script>
+  // Function to retrieve the token from local storage
+  function getToken() {
+    return localStorage.getItem('jwtToken');
+  }
+
+  // Function to check if the user is authenticated
+  async function isAuthenticated() {
+    const token = getToken();
+    if (token === null) {
+      return false;
+    }
+
+    // Make a request to the server to validate the token
+    const response = await fetch('/protecteduser', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    return response.ok;
+  }
+
+  // Function to redirect to the login page
+  function redirectToLogin() {
+    window.location.href = '/login';
+  }
+
+  // Function to retrieve the current user's data
+  async function getCurrentUser() {
+    const response = await fetch('/current-user', {
+      headers: {
+        'Authorization': `Bearer ${getToken()}`
+      }
+    });
+
+    if (response.ok) {
+      return await response.json();
+    } else {
+      throw new Error('Failed to get current user');
+    }
+  }
+
+  async function createPost() {
+    try {
+      if (!(await isAuthenticated())) {
+        redirectToLogin();
+        return;
+      }
+
+      const userData = await getCurrentUser();
+      document.getElementById('user_id').value = userData.user_id; // Set user_id value
+
+      // Get the form data
+      const form = document.getElementById('postForm');
+      const formData = new FormData(form);
+
+      // Add the token to the Authorization header
+      const token = getToken();
+      const headers = new Headers();
+      headers.append('Authorization', `Bearer ${token}`);
+
+      // Make the API call with the headers and form data
+      const response = await fetch('/posts/addplant', {
+        method: 'POST',
+        headers: headers,
+        body: formData
+      });
+
+      if (response.ok) {
+        // Handle success
+        const responseData = await response.json();
+        window.location.href = "/main";
+        console.log(responseData);
+      } else {
+        // Handle error
+        document.getElementById('error').innerText = "Failed to create"; // Display email
+
+        console.error('Failed to create post');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // Function to check authentication on page load
+  async function checkAuthentication() {
+    if (!(await isAuthenticated())) {
+      redirectToLogin();
+    }
+  }
+
+  // Call the function to check authentication on page load
+  checkAuthentication();
+</script>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+  }
+
+  body {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .container {
+    max-width: 450px;
+    margin-top: 30px;
+    width: 90%;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 25px 30px;
+    border-radius: 5px;
+  }
+
+  .container .title {
+    font-size: 25px;
+    font-weight: 500;
+    position: relative;
+  }
+
+  .container .title::before {
+    content: "";
+    position: absolute;
+    height: 3.5px;
+    width: 30px;
+    left: 0;
+    bottom: 0;
+  }
+
+  .container form .user__details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+  }
+
+  form .user__details .input_box {
+    width: 80%;
+    margin-bottom: 10px;
+  }
+
+  .user__details .input_box .details {
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .user__details .input_box input {
+    height: 40px;
+    width: 80%;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid green;
+    padding-left: 15px;
+    font-size: 16px;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .user__details .input_box input:focus,
+  .user__details .input_box input:valid {
+    border-color: green;
+  }
+
+
+  .button{
+    height: 45px;
+    width: 100%;
+    outline: none;
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    font-weight: 500;
+    border-radius: 5px;
+    background: #006400;
+    transition: all 0.3s ease;
+  }
+
+  .button:hover {
+    background: #228B22;
+  }
+
+  @media only screen and (max-width: 584px) {
+    .container {
+      max-width: 100%;
+    }
+
+    form .user__details .input_box {
+      margin-bottom: 5px;
+      width: 100%;
+    }
+
+    .container form .user__details {
+      max-height: 300px;
+      overflow-y: scroll;
+    }
+
+    .user__details::-webkit-scrollbar {
+      width: 0;
+    }
+  }
+
+  select {
+    position: relative;
+    width: 80%;
+  }
+
+ 
+  textarea {
+    height: 100px;
+    width: 100%;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid green;
+    padding-left: 15px;
+    font-size: 16px;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+    resize: none;
+  }
+
+  textarea:focus,
+  textarea:valid {
+    border-color: #006400;
+  }
+</style>
+<script type="text/javascript">
+    function previewFile() {
+        const preview = document.querySelector('img');
+        const file = document.querySelector('input[type=file]').files[0];
+        const reader = new FileReader();
+        reader.addEventListener("load", function() {
+            preview.src = reader.result; // show image in <img> tag
+            uploadFile(file)
+        }, false);
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+  
+    function uploadFile(file) {
+        var formData = new FormData();
+        formData.append('file', file);
+        fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+      /* When the user clicks on the button, 
+      toggle between hiding and showing the dropdown content */
+      function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+      }
+      
+      // Close the dropdown if the user clicks outside of it
+      window.onclick = function(e) {
+        if (!e.target.matches('.rounded-button')) {
+        var myDropdown = document.getElementById("myDropdown");
+          if (myDropdown.classList.contains('show')) {
+            myDropdown.classList.remove('show');
+          }
+        }
+      }
+  </script>
+<div class="container">
+  <div class="title">Edit Plant</div>
+  <form action="/plants/editplant" method="post">
+    <div class="user__details">
+       <input name = "plant_id" value= "{{plant.id}}"hidden>
+      <p>
+        <span class="details" style="font-weight:400">Name</span>
+        <input name = "name" style="color: #228B22" value= "{{plant.name}}"class="w3-input" type="text" style="width: 360px;;">
+      </p>
+      <p>
+        <span class="details" style="font-weight:400">Type</span>
+        <input name = "type"style="color: #228B22" value= "{{plant.type}}" class="w3-input" type="text" style="width: 360px;;">
+      </p>
+      <p>
+        <span class="details" style="font-weight:400">Location</span>
+        <input name = "location"style="color: #228B22" value= "{{plant.location}}"class="w3-input" type="text" style="width: 360px;;">
+      </p>
+    </div>
+
+    <div class="input_box">
+      <span class="details" style="font-weight:400;">Notes</span>
+      <textarea style =" margin-top: 10px;" name ="notes" required>{{plant.notes}}</textarea>
+    </div>
+  </br>
+
+    
+    
+    
+    <button class="button"type="submit" value="Submit">Submit</button>
+  </form>
+</div>
+
+</html>

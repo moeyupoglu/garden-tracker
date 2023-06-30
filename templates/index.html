@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Garden Tacker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        // Function to retrieve the token from local storage
+        function getToken() {
+          return localStorage.getItem('jwtToken');
+        }
+      
+        // Function to check if the user is authenticated
+        async function isAuthenticated() {
+          const token = getToken();
+      
+          if (token === null) {
+            return false;
+          }
+      
+          // Make a request to the server to validate the token
+          const response = await fetch('/protecteduser', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+      
+          return response.ok;
+        }
+      
+        // Function to retrieve the current user's data
+        async function getCurrentUser() {
+          const response = await fetch('/current-user', {
+            headers: {
+              'Authorization': `Bearer ${getToken()}`
+            }
+          });
+      
+          if (response.ok) {
+            return await response.json();
+          } else {
+            throw new Error('Failed to get current user');
+          }
+        }
+      
+        // Function to redirect to the login page
+        function redirectToLogin() {
+          window.location.href = '/login';
+        }
+      
+        // Function to initialize the page and check authentication
+        async function init() {
+          if (!(await isAuthenticated())) {
+            redirectToLogin();
+          } else {
+            try {
+              const userData = await getCurrentUser();
+              document.getElementById('user_id_editplant').value = userData.user_id; // Set user_id value for Add Plant form
+              document.getElementById('user_id_viewplant').value = userData.user_id; // Set user_id value for Edit Plant form
+            } catch (error) {
+              console.error('Error retrieving user data:', error);
+            }
+          }
+        }
+      
+        // Call the init function when the page loads
+        window.addEventListener('load', init);
+      </script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            font-family: 'Poppins', Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid grey;
+            width: 450px;
+            max-width: 100%;
+            height: 650px;
+        }
+        
+        .slideshow-container {
+            position: relative;
+            margin-top: 10px;
+            width: 400px;
+            height: 300px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        .slideshow-container .slide {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .slideshow-container .slide.active {
+            display: block;
+        }
+        
+        .slideshow-container .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .prev,
+        .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 24px;
+            text-align: center;
+            line-height: 40px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .prev:hover,
+        .next:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .prev {
+            left: 10px;
+        }
+        
+        .next {
+            right: 10px;
+        }
+        
+        .text {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 0 20px; /* Added padding for space on left and right sides */
+        }
+        
+        .button {
+            padding: 10px 20px;
+            background-color: #006400;
+            color: #fff;
+            font-size: 16px;
+            width: 80%;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .button:hover {
+            background-color: #228B22;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="slideshow-container">
+            <div class="slide active">
+                <img src="https://www.gardeningknowhow.com/wp-content/uploads/2007/03/flowers-1-400x300.jpg" alt="Slide 1">
+            </div>
+            <div class="slide">
+                <img src="https://www.thespruce.com/thmb/ELZvbqyHOeaW6-P8yqSWaLvLSAw=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/how-to-start-a-garden-from-scratch-2132778-hero-5f6138784a034bad8bf9607ccb18dbed.jpg" alt="Slide 2">
+            </div>
+            <div class="slide">
+                <img src="https://content.jdmagicbox.com/comp/jaipur/j6/0141px141.x141.180731123041.k4j6/catalogue/aarna-nursery-vaishali-nagar-jaipur-plant-nurseries-wolnkpgsgc.jpg" alt="Slide 3">
+            </div>
+            
+            <div class="prev" onclick="changeSlide(-1)">&#10094;</div>
+            <div class="next" onclick="changeSlide(1)">&#10095;</div>
+        </div>
+        
+        <div class="text">
+            <h2>Our Aim</h2>
+            <p style="text-align: center; margin: 0 20px;">Once users have chosen their plants, the app facilitates garden management by allowing them to create and organize their virtual garden. Users can add plants to their garden, specify their locations within the garden, and track important details like planting dates, watering schedules, fertilization, and pruning.</p>
+        </div>
+        <form method="get" action="/main">
+            <button class="button" style="width: 300px;" >See Management Console</button>        
+        </form>
+        
+    </div>
+
+    <script>
+        let slideIndex = 0;
+        const slides = document.getElementsByClassName('slide');
+        
+        function showSlide(n) {
+            if (n < 0) {
+                slideIndex = slides.length - 1;
+            } else if (n >= slides.length) {
+                slideIndex = 0;
+            } else {
+                slideIndex = n;
+            }
+            
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove('active');
+            }
+            
+            slides[slideIndex].classList.add('active');
+        }
+        
+        function changeSlide(n) {
+            showSlide(slideIndex + n);
+        }
+        
+        setInterval(() => {
+            changeSlide(1);
+        }, 3000);
+    </script>
+</body>
+</html>

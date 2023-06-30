@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Garden Tracker</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            font-family: 'Poppins', Arial, sans-serif;
+            color: #000000; /* Set font color to black */
+        }
+
+        .signup-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin-top: 20px; /* Add space between elements */
+        }
+
+        .signup-box {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 400px;
+            max-width: 90%;
+            position: relative;
+            text-align: center;
+            margin-top: 20px; /* Add space between elements */
+        }
+
+        .signup-box img {
+            display: block;
+            margin: 10px auto;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+            object-position: center center;
+            overflow: hidden;
+        }
+
+        .signup-box h1 {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .signup-box label {
+            display: block;
+            text-align: left;
+            margin-left: 20px;
+            padding: 5px 10px; /* Decrease vertical padding */
+            font-size: 14px;
+            width: 80%; /* Set the label width to match the input fields */
+            box-sizing: border-box;
+        }
+
+        .signup-box input[type="email"],
+        .signup-box input[type="password"] {
+            display: block;
+            margin: 5px auto; /* Decrease vertical margin */
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 80%;
+            border: 2px solid #006400; /* Set input borders to dark green */
+            border-radius: 10px; /* Make input fields slightly round */
+            font-size: 16px;
+            font-family: 'Poppins', Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .signup-box button[type="submit"] {
+            margin-top: 20px; /* Adjust margin-top as needed */
+            margin-left: 5px;
+            margin-right: 5px;
+            padding: 10px;
+            width: 80%;
+            background-color: #006400; /* Set button background to dark green */
+            color: #fff;
+            border: none;
+            border-radius: 10px; /* Make button slightly round */
+            font-size: 16px;
+            font-family: 'Poppins', Arial, sans-serif;
+            cursor: pointer;
+        }
+
+        .signup-box button[type="submit"]:hover {
+            background-color: #228B22; /* Darken the button color on hover */
+        }
+    </style>
+	    <script>
+			function saveToken(token) {
+				localStorage.setItem('jwtToken', token);
+				
+			}
+		</script>
+</head>
+<body>
+    <div class="signup-container">
+        <form method="post" action="">
+            <div class="signup-box">
+                <img class="profile-pic" src="https://img.freepik.com/free-vector/illustration-young-fresh-plant-human-hand_1284-45597.jpg" alt="profile picture" width="200">
+                <h1 style="font-size: 24px;">Garden Tracker</h1>
+                <label for="username">Email</label>
+                <input type="email" name="email"  placeholder="Email" required>
+                <label for="password">Password</label>
+                <input type="password" name="password"  placeholder="Password" required>
+                <button type="submit">Signup</button>
+                <p>Already have an account? <a href="/login">Login</a></p>
+            </div>
+        </form>
+    </div>
+	<script>
+        document.querySelector('form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            // Make a POST request to the login endpoint
+            const response = await fetch('/users/signup', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Parse the response JSON
+            const data = await response.json();
+            
+            // Store the token in local storage
+            
+			window.location.href = "/login";
+            
+
+        });
+    </script>
+</body>
+</html>
