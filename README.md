@@ -56,7 +56,7 @@
 	<h2>License</h2>
 	<p>Garden Tracker is licensed under the MIT License. See <code>LICENSE</code> for details.</p>
 	<h2>Authors</h2>
-	<p>Muhammad (<a href="mailto:muhammad.magh@gmail.com">muhammad.magh@gmail.com</a>)</p>
+	<p>Muhammad Eyupoglu(<a href="mailto:muhammad.magh@gmail.com">muhammad.magh@gmail.com</a>)</p>
 	<h2>Acknowledgements</h2>
 	<p>Special thanks to the instructors and teaching assistants of the Python programming course.</p>
 </body>
